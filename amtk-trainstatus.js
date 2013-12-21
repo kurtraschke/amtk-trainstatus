@@ -17,7 +17,7 @@ $(function () {
 
         var formats = ["MM/DD/YYYY hh:mm:ss A", "MM/DD/YYYY HH:mm:ss"];
 
-        return moment.tz(timestamp, timeZones[timeZone]);
+        return moment.tz(timestamp, formats, timeZones[timeZone]);
     };
 
     function makeDatum(feature) {
@@ -68,6 +68,7 @@ $(function () {
             r = sr.exec(key);
             if (r) {
                 var s = $.parseJSON(value);
+                s.eventStation = (d.hasEvent && s.code == d.EventCode);
                 s.cmnt = s.postcmnt || s.estarrcmnt || s.estdepcmnt || s.schcmnt;
 
                 d.stationCodes.push(s.code);
@@ -86,7 +87,7 @@ $(function () {
                 $.each(times, function (index, value) {
                     if (s[value]) {
                         s[value] = parseTimestamp(s[value], s.tz);
-                        s[value + "Rel"] = s[value].fromNow();
+                        //s[value + "Rel"] = s[value].fromNow();
                         s[value + "Abs"] = s[value].format("LT z");
                     }
                 });
@@ -94,19 +95,19 @@ $(function () {
             properties.stationTimesParsed = true;
         }
     }
-    
+
     function processStationCodes(node) {
-      
-      $("span.stationCode", node).each(function(index, element) {
-        var stationCodeElement = $(this);
-        var stationCode = stationCodeElement.text();
-        console.log(stationCode);
-        if (stations[stationCode]) {
-          var stationName = stations[stationCode].StationName;
-          console.log(stationName);
-          stationCodeElement.tooltip({title: stationName, placement: 'auto'});
-        
-      }});
+        $("span.stationCode", node).each(function (index, element) {
+            var stationCodeElement = $(this);
+            var stationCode = stationCodeElement.text();
+            if (stations[stationCode]) {
+                var stationName = stations[stationCode].StationName;
+                stationCodeElement.tooltip({
+                    title: stationName,
+                    placement: 'auto'
+                });
+            }
+        });
     }
 
     $.get("https://docs.google.com/spreadsheet/pub?key=0AvrkbWHnoksNdEZtb3RhRDZ2MU5qVl8yUC1vTGdOc1E&single=true&gid=3&range=A1%3AB974&output=csv", function (data, textStatus, jqXHR) {
@@ -119,13 +120,13 @@ $(function () {
     $("#searchbox").typeahead([{
         name: "Trains",
         prefetch: {
-            url: "https://www.googleapis.com/mapsengine/v1/tables/01382379791355219452-08584582962951999356/features?version=published&key=AIzaSyCVFeFQrtk-ywrUE0pEcvlwgCqS6TJcOW4&maxResults=250",
+            url: "https://www.googleapis.com/mapsengine/v1/tables/01382379791355219452-08584582962951999356/features?version=published&key=AIzaSyCzkHf7juAK8qsQhp7Uj06yZC2F-9Dki2w&maxResults=250",
             ttl: 30,
             filter: function (parsedResponse) {
                 return $.map(parsedResponse.features, makeDatum);
             }
         },
-        limit: 10,
+        limit: 20,
         template: function (value) {
             return typeaheadTemplate(value.properties);
         }

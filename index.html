@@ -81,7 +81,7 @@
           <tr><th>Station</th><th>Scheduled Arrival</th><th>Actual <em>(Estimated)</em> Arrival</th>
           <th>Scheduled Departure</th><th>Actual <em>(Estimated)</em> Departure</th><th>Comment</th></tr>
           {{#each stations}}
-          <tr>
+          <tr {{#if eventStation}}class="success"{{/if}}>
             <th><span class="stationCode">{{code}}</span></th>
             <td>{{scharrAbs}}</td>
             <td>{{#if postarr }}{{postarrAbs}}{{else}}<em>{{estarrAbs}}</em>{{/if}}</td>
